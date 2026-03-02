@@ -1,0 +1,506 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <meta name="description" content="HIPPOINT — African Basics for Work and Play. Shop authentic African-print fashion made for everyday life. Est. 2020, Lagos.">
+  <meta name="theme-color" content="#d85e22">
+  <title>HIPPOINT — African Basics for Work and Play</title>
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+  <link href="https://fonts.googleapis.com/css2?family=Cormorant+Garamond:ital,wght@0,300;0,400;0,500;0,600;0,700;1,300;1,400;1,600&family=Lato:wght@300;400;700;900&display=swap" rel="stylesheet">
+  <link rel="stylesheet" href="styles.css">
+</head>
+<body>
+
+<!-- Custom Cursor (hidden on mobile via CSS) -->
+<div class="cursor" id="cursor" aria-hidden="true"></div>
+<div class="cursor-ring" id="cursorRing" aria-hidden="true"></div>
+
+<!-- Toast notification -->
+<div class="toast" id="toast" role="status" aria-live="polite">
+  <span class="toast-dot"></span>
+  <span id="toastMsg">Added to cart</span>
+</div>
+
+<!-- ════════ HEADER ════════ -->
+<header id="header">
+  <div class="logo" onclick="navigate('home')" role="button" tabindex="0" aria-label="Go to homepage">HIP<span>POINT</span></div>
+  <nav role="navigation" aria-label="Main navigation">
+    <a onclick="navigate('home')" id="nav-home" class="active-nav" tabindex="0">Home</a>
+    <a onclick="navigate('shop')" id="nav-shop" tabindex="0">Shop</a>
+    <a onclick="navigate('about')" id="nav-about" tabindex="0">About</a>
+  </nav>
+  <div class="header-right">
+    <button class="cart-btn" onclick="toggleCart()" aria-label="Open shopping bag">
+      <svg viewBox="0 0 24 24" aria-hidden="true"><path d="M6 2L3 6v14a2 2 0 002 2h14a2 2 0 002-2V6l-3-4z"/><line x1="3" y1="6" x2="21" y2="6"/><path d="M16 10a4 4 0 01-8 0"/></svg>
+      <span class="cart-count" id="cartCount" aria-label="Items in bag">0</span>
+    </button>
+  </div>
+</header>
+
+<!-- ════════ CART DRAWER ════════ -->
+<div class="cart-overlay" id="cartOverlay" onclick="toggleCart()" aria-hidden="true"></div>
+<aside class="cart-drawer" id="cartDrawer" role="dialog" aria-modal="true" aria-label="Shopping bag">
+  <div class="cart-header">
+    <div class="cart-title">Your Bag</div>
+    <button class="cart-close" onclick="toggleCart()" aria-label="Close bag"><svg viewBox="0 0 24 24" aria-hidden="true"><line x1="18" y1="6" x2="6" y2="18"/><line x1="6" y1="6" x2="18" y2="18"/></svg></button>
+  </div>
+  <div class="cart-items" id="cartItems">
+    <div class="cart-empty" id="cartEmpty">
+      <div class="cart-empty-icon">🛍️</div>
+      <p>Your bag is empty</p>
+      <p style="margin-top:8px;font-size:12px;">Discover our African basics</p>
+    </div>
+  </div>
+  <div class="cart-footer" id="cartFooter" style="display:none">
+    <div class="cart-subtotal">
+      <span class="subtotal-label">Subtotal</span>
+      <span class="subtotal-amount" id="cartSubtotal">₦0</span>
+    </div>
+    <p class="cart-note">Shipping calculated at checkout</p>
+    <button class="btn-primary" onclick="handleCheckout()">Checkout</button>
+    <button class="btn-outline" onclick="navigate('shop'); toggleCart();">Continue Shopping</button>
+  </div>
+</aside>
+
+<!-- ════════ QUICK VIEW MODAL ════════ -->
+<div class="modal-overlay" id="modalOverlay" role="dialog" aria-modal="true" aria-label="Product quick view">
+  <div class="modal-box" id="modalBox">
+    <div class="modal-img" id="modalImg">
+      <button class="modal-close" onclick="closeModal()" aria-label="Close"><svg viewBox="0 0 24 24" aria-hidden="true"><line x1="18" y1="6" x2="6" y2="18"/><line x1="6" y1="6" x2="18" y2="18"/></svg></button>
+      <span id="modalEmoji" aria-hidden="true">👘</span>
+    </div>
+    <div class="modal-content">
+      <div class="modal-tag" id="modalTag">Collection</div>
+      <div class="modal-name" id="modalName">Product Name</div>
+      <div class="modal-price" id="modalPrice">₦0</div>
+      <p class="modal-desc" id="modalDesc">Description</p>
+      <div class="filter-title" style="margin-bottom:12px" id="sizeSelectLabel">Select Size</div>
+      <div class="modal-sizes" id="modalSizes" role="group" aria-labelledby="sizeSelectLabel"></div>
+      <button class="modal-add-btn" id="modalAddBtn">
+        <svg viewBox="0 0 24 24" aria-hidden="true"><path d="M6 2L3 6v14a2 2 0 002 2h14a2 2 0 002-2V6l-3-4z"/><line x1="3" y1="6" x2="21" y2="6"/><path d="M16 10a4 4 0 01-8 0"/></svg>
+        <span>Add to Bag</span>
+      </button>
+    </div>
+  </div>
+</div>
+
+<!-- ════════════════════════════════════════
+     HOME PAGE
+     ════════════════════════════════════════ -->
+<main class="page active fade-in" id="home">
+
+  <section class="hero">
+    <div class="hero-bg">
+      <div class="hero-shapes" aria-hidden="true">
+        <div class="shape shape-1"></div>
+        <div class="shape shape-2"></div>
+        <div class="shape shape-3"></div>
+      </div>
+      <div class="hero-pattern" aria-hidden="true"></div>
+    </div>
+    <div class="hero-deco" aria-hidden="true">
+      <svg viewBox="0 0 300 300" fill="none">
+        <circle cx="150" cy="150" r="140" stroke="#d85e22" stroke-width="2"/>
+        <circle cx="150" cy="150" r="100" stroke="#919a2e" stroke-width="2"/>
+        <circle cx="150" cy="150" r="60" stroke="#e199a9" stroke-width="2"/>
+        <path d="M10 150 H290 M150 10 V290" stroke="#a8b68e" stroke-width="1"/>
+        <path d="M50 50 L250 250 M250 50 L50 250" stroke="#d85e22" stroke-width="1" opacity="0.5"/>
+        <rect x="130" y="30" width="40" height="8" fill="#d85e22" opacity="0.5"/>
+        <rect x="130" y="262" width="40" height="8" fill="#d85e22" opacity="0.5"/>
+        <rect x="30" y="130" width="8" height="40" fill="#919a2e" opacity="0.5"/>
+        <rect x="262" y="130" width="8" height="40" fill="#919a2e" opacity="0.5"/>
+        <polygon points="150,80 170,120 130,120" fill="#e199a9" opacity="0.4"/>
+        <polygon points="150,220 170,180 130,180" fill="#e199a9" opacity="0.4"/>
+      </svg>
+    </div>
+    <div class="hero-content">
+      <p class="hero-eyebrow">Est. 2020 · African Basics</p>
+      <h1 class="hero-headline">African Basics<br>For <em>Everyday</em><br>Comfort</h1>
+      <p class="hero-sub">Everyday African prints reimagined for the people without boundaries — made for work, made for play, made for you.</p>
+      <div class="hero-cta-group">
+        <button class="cta-main" onclick="navigate('shop')">
+          <span>Shop Now</span>
+          <svg viewBox="0 0 16 16" aria-hidden="true"><path d="M3 8h10M9 4l4 4-4 4"/></svg>
+        </button>
+        <button class="cta-ghost" onclick="navigate('about')">Our Story</button>
+      </div>
+    </div>
+    <div class="hero-scroll" aria-hidden="true">
+      <span class="scroll-text">Scroll</span>
+      <div class="scroll-line"></div>
+    </div>
+  </section>
+
+  <div class="marquee-bar" aria-hidden="true">
+    <div class="marquee-track">
+      <span class="marquee-item">African Basics <span class="marquee-dot">✦</span></span>
+      <span class="marquee-item">For Work &amp; Play <span class="marquee-dot">✦</span></span>
+      <span class="marquee-item">Est. 2020 <span class="marquee-dot">✦</span></span>
+      <span class="marquee-item">Crafted with Care <span class="marquee-dot">✦</span></span>
+      <span class="marquee-item">People Without Boundaries <span class="marquee-dot">✦</span></span>
+      <span class="marquee-item">The Rose Touch <span class="marquee-dot">✦</span></span>
+      <span class="marquee-item">African Basics <span class="marquee-dot">✦</span></span>
+      <span class="marquee-item">For Work &amp; Play <span class="marquee-dot">✦</span></span>
+      <span class="marquee-item">Est. 2020 <span class="marquee-dot">✦</span></span>
+      <span class="marquee-item">Crafted with Care <span class="marquee-dot">✦</span></span>
+      <span class="marquee-item">People Without Boundaries <span class="marquee-dot">✦</span></span>
+      <span class="marquee-item">The Rose Touch <span class="marquee-dot">✦</span></span>
+    </div>
+  </div>
+
+  <section class="section">
+    <div class="section-header reveal">
+      <div>
+        <p class="section-label">Featured</p>
+        <h2 class="section-title">Our <em>Collections</em></h2>
+      </div>
+      <span class="section-link" onclick="navigate('shop')" tabindex="0" role="button">View All Pieces →</span>
+    </div>
+    <div class="collections-grid">
+      <div class="coll-card reveal" onclick="navigate('shop')">
+        <div class="coll-img-placeholder" style="background:linear-gradient(135deg,#d85e22,#919a2e)">🦋</div>
+        <div class="coll-overlay"></div>
+        <div class="coll-content"><p class="coll-tag">New Season</p><h3 class="coll-name">The Ankara Everyday Edit</h3><span class="coll-cta">Explore Collection →</span></div>
+      </div>
+      <div class="coll-card reveal reveal-delay-1" onclick="navigate('shop')">
+        <div class="coll-img-placeholder" style="background:linear-gradient(135deg,#919a2e,#a8b68e)">👗</div>
+        <div class="coll-overlay"></div>
+        <div class="coll-content"><p class="coll-tag">Workwear</p><h3 class="coll-name">The Professional</h3><span class="coll-cta">Explore →</span></div>
+      </div>
+      <div class="coll-card reveal reveal-delay-2" onclick="navigate('shop')">
+        <div class="coll-img-placeholder" style="background:linear-gradient(135deg,#e199a9,#f7cdec)">🌸</div>
+        <div class="coll-overlay"></div>
+        <div class="coll-content"><p class="coll-tag">Weekend</p><h3 class="coll-name">Soft Living</h3><span class="coll-cta">Explore →</span></div>
+      </div>
+      <div class="coll-card reveal reveal-delay-3" onclick="navigate('shop')">
+        <div class="coll-img-placeholder" style="background:linear-gradient(135deg,#e63a31,#d85e22)">🌺</div>
+        <div class="coll-overlay"></div>
+        <div class="coll-content"><p class="coll-tag">Bold</p><h3 class="coll-name">Red Earth Prints</h3><span class="coll-cta">Explore →</span></div>
+      </div>
+    </div>
+  </section>
+
+  <section class="rose-section">
+    <div class="rose-bg-pattern" aria-hidden="true"></div>
+    <div class="rose-inner">
+      <span class="rose-icon" aria-hidden="true">🌹</span>
+      <span class="rose-label">The Hippoint Philosophy</span>
+      <h2 class="rose-title">The <em>Rose Touch</em></h2>
+      <div class="rose-divider" aria-hidden="true"></div>
+      <p class="rose-text">Every stitch at Hippoint carries intention. We believe that African fabrics are not costumes — they are a language, a heritage, a living art. Our craftspeople handle each print with the same delicacy you'd give a rose: strong in presence, gentle in touch. From the market stall to the boardroom, our pieces are made to move with you through every moment of your day.</p>
+      <p class="rose-text" style="margin-bottom:0;font-style:italic;color:var(--dusty-pink);font-family:'Cormorant Garamond',serif;font-size:18px;">"Rooted in Africa. Worn by the world."</p>
+    </div>
+  </section>
+
+  <div class="stats-section">
+    <div class="stat-item reveal"><div class="stat-num">500+</div><div class="stat-label">Unique Prints</div></div>
+    <div class="stat-item reveal reveal-delay-1"><div class="stat-num">12k</div><div class="stat-label">Happy Clients</div></div>
+    <div class="stat-item reveal reveal-delay-2"><div class="stat-num">4</div><div class="stat-label">Years Crafting</div></div>
+    <div class="stat-item reveal reveal-delay-3"><div class="stat-num">100%</div><div class="stat-label">African Made</div></div>
+  </div>
+
+  <section class="section">
+    <div class="section-header reveal">
+      <div>
+        <p class="section-label">Bestsellers</p>
+        <h2 class="section-title">Just <em>Dropped</em></h2>
+      </div>
+      <span class="section-link" onclick="navigate('shop')" tabindex="0" role="button">Shop All →</span>
+    </div>
+    <div class="product-grid" id="homeProducts"></div>
+  </section>
+
+  <section class="newsletter-section">
+    <div class="newsletter-bg" aria-hidden="true"></div>
+    <div class="newsletter-inner">
+      <p class="newsletter-label reveal">Join the Circle</p>
+      <h2 class="newsletter-title reveal">Stay in the <em>Loop</em></h2>
+      <p class="newsletter-sub reveal">New drops, behind-the-scenes, and styling notes — straight to your inbox.</p>
+      <div class="newsletter-form reveal">
+        <label for="newsletterEmail" class="sr-only">Email address</label>
+        <input type="email" id="newsletterEmail" class="newsletter-input" placeholder="Your email address" autocomplete="email">
+        <button class="newsletter-btn" id="newsletterBtn">Subscribe</button>
+      </div>
+      <p class="newsletter-sig reveal">With care, from Hippoint 🌹</p>
+    </div>
+  </section>
+
+  <footer>
+    <div class="footer-grid">
+      <div>
+        <div class="footer-brand-name">HIP<span>POINT</span></div>
+        <p class="footer-tagline">African basics for work and play. Crafted with care, worn with pride. Est. 2020.</p>
+        <div class="footer-social">
+          <a class="social-btn" href="#" aria-label="X">𝕏</a>
+          <a class="social-btn" href="#" aria-label="Instagram">📸</a>
+          <a class="social-btn" href="#" aria-label="TikTok">▶</a>
+          <a class="social-btn" href="#" aria-label="Pinterest">📌</a>
+        </div>
+      </div>
+      <div>
+        <p class="footer-col-title">Shop</p>
+        <ul class="footer-links">
+          <li><a onclick="navigate('shop')" tabindex="0">All Collections</a></li>
+          <li><a onclick="navigate('shop')" tabindex="0">New Arrivals</a></li>
+          <li><a onclick="navigate('shop')" tabindex="0">Workwear</a></li>
+          <li><a onclick="navigate('shop')" tabindex="0">Weekend Edit</a></li>
+          <li><a onclick="navigate('shop')" tabindex="0">Sale</a></li>
+        </ul>
+      </div>
+      <div>
+        <p class="footer-col-title">Company</p>
+        <ul class="footer-links">
+          <li><a onclick="navigate('about')" tabindex="0">Our Story</a></li>
+          <li><a href="#" tabindex="0">Sustainability</a></li>
+          <li><a href="#" tabindex="0">Artisans</a></li>
+          <li><a href="#" tabindex="0">Press</a></li>
+          <li><a href="#" tabindex="0">Careers</a></li>
+        </ul>
+      </div>
+      <div>
+        <p class="footer-col-title">Help</p>
+        <ul class="footer-links">
+          <li><a href="#" tabindex="0">Sizing Guide</a></li>
+          <li><a href="#" tabindex="0">Returns</a></li>
+          <li><a href="#" tabindex="0">Shipping</a></li>
+          <li><a href="#" tabindex="0">Contact Us</a></li>
+          <li><a href="#" tabindex="0">FAQ</a></li>
+        </ul>
+      </div>
+    </div>
+    <div class="footer-bottom">
+      <p class="footer-copy">© 2025 Hippoint. All rights reserved.</p>
+      <p class="footer-est">African Basics — For Work and Play 🌹</p>
+    </div>
+  </footer>
+</main>
+
+<!-- ════════════════════════════════════════
+     SHOP PAGE
+     ════════════════════════════════════════ -->
+<main class="page" id="shop">
+  <div class="shop-hero">
+    <div class="shop-hero-bg" aria-hidden="true"></div>
+    <div class="shop-hero-pattern" aria-hidden="true"></div>
+    <div class="shop-hero-content">
+      <p class="shop-hero-label">Hippoint · Collection</p>
+      <h1 class="shop-hero-title">The <em>Full</em><br>Collection</h1>
+      <p class="shop-count" id="shopCount">24 pieces, thoughtfully made</p>
+    </div>
+  </div>
+
+  <div class="shop-layout">
+    <aside class="filter-sidebar" aria-label="Product filters">
+      <div class="filter-section">
+        <p class="filter-title">Category</p>
+        <div class="category-list">
+          <div class="cat-item active" onclick="filterCategory(this,'all')" tabindex="0">All Pieces <span class="cat-count">24</span></div>
+          <div class="cat-item" onclick="filterCategory(this,'dress')" tabindex="0">Dresses <span class="cat-count">8</span></div>
+          <div class="cat-item" onclick="filterCategory(this,'top')" tabindex="0">Tops &amp; Blouses <span class="cat-count">7</span></div>
+          <div class="cat-item" onclick="filterCategory(this,'skirt')" tabindex="0">Skirts <span class="cat-count">5</span></div>
+          <div class="cat-item" onclick="filterCategory(this,'set')" tabindex="0">Co-ord Sets <span class="cat-count">4</span></div>
+        </div>
+      </div>
+      <div class="filter-section">
+        <p class="filter-title">Size</p>
+        <div class="size-grid">
+          <button class="size-btn" onclick="toggleSize(this)">XS</button>
+          <button class="size-btn" onclick="toggleSize(this)">S</button>
+          <button class="size-btn active" onclick="toggleSize(this)">M</button>
+          <button class="size-btn" onclick="toggleSize(this)">L</button>
+          <button class="size-btn" onclick="toggleSize(this)">XL</button>
+          <button class="size-btn" onclick="toggleSize(this)">2XL</button>
+        </div>
+      </div>
+      <div class="filter-section">
+        <p class="filter-title">Colour</p>
+        <div class="color-grid">
+          <div class="color-swatch" style="background:#d85e22" title="Burnt Orange" onclick="toggleSwatch(this)"></div>
+          <div class="color-swatch" style="background:#919a2e" title="Olive" onclick="toggleSwatch(this)"></div>
+          <div class="color-swatch" style="background:#e63a31" title="Red" onclick="toggleSwatch(this)"></div>
+          <div class="color-swatch" style="background:#e199a9" title="Dusty Pink" onclick="toggleSwatch(this)"></div>
+          <div class="color-swatch" style="background:#a8b68e" title="Sage" onclick="toggleSwatch(this)"></div>
+          <div class="color-swatch" style="background:#f7cdec" title="Soft Blush" onclick="toggleSwatch(this)"></div>
+          <div class="color-swatch" style="background:#2a1f14" title="Dark" onclick="toggleSwatch(this)"></div>
+          <div class="color-swatch" style="background:#f5f0e8" title="Cream" onclick="toggleSwatch(this)"></div>
+        </div>
+      </div>
+      <div class="filter-section">
+        <p class="filter-title">Price</p>
+        <div class="price-slider-container">
+          <div class="price-range-labels">
+            <span>₦5,000</span>
+            <span id="priceVal">₦80,000</span>
+          </div>
+          <input type="range" class="price-slider" min="5000" max="150000" value="80000"
+            oninput="document.getElementById('priceVal').textContent='₦'+Number(this.value).toLocaleString()"
+            aria-label="Maximum price filter">
+        </div>
+      </div>
+    </aside>
+
+    <div class="products-area">
+      <div class="products-toolbar">
+        <span class="toolbar-results">Showing <span id="filteredCount">24</span> results</span>
+        <label for="sortSelect" class="sr-only">Sort products</label>
+        <select id="sortSelect" class="sort-select" onchange="sortProducts(this.value)">
+          <option value="featured">Featured</option>
+          <option value="new">New Arrivals</option>
+          <option value="price-asc">Price: Low to High</option>
+          <option value="price-desc">Price: High to Low</option>
+        </select>
+      </div>
+      <div class="product-grid" id="shopProducts"></div>
+    </div>
+  </div>
+
+  <footer>
+    <div class="footer-grid">
+      <div>
+        <div class="footer-brand-name">HIP<span>POINT</span></div>
+        <p class="footer-tagline">African basics for work and play. Est. 2020.</p>
+      </div>
+      <div>
+        <p class="footer-col-title">Quick Links</p>
+        <ul class="footer-links">
+          <li><a onclick="navigate('home')" tabindex="0">Home</a></li>
+          <li><a onclick="navigate('about')" tabindex="0">About</a></li>
+        </ul>
+      </div>
+      <div>
+        <p class="footer-col-title">Follow Us</p>
+        <div class="footer-social" style="margin-top:4px">
+          <a class="social-btn" href="#" aria-label="X">𝕏</a>
+          <a class="social-btn" href="#" aria-label="Instagram">📸</a>
+          <a class="social-btn" href="#" aria-label="TikTok">▶</a>
+        </div>
+      </div>
+      <div>
+        <p class="footer-col-title">Help</p>
+        <ul class="footer-links">
+          <li><a href="#" tabindex="0">Sizing Guide</a></li>
+          <li><a href="#" tabindex="0">Returns</a></li>
+          <li><a href="#" tabindex="0">Contact</a></li>
+        </ul>
+      </div>
+    </div>
+    <div class="footer-bottom">
+      <p class="footer-copy">© 2025 Hippoint. All rights reserved.</p>
+      <p class="footer-est">African Basics — For Work and Play 🌹</p>
+    </div>
+  </footer>
+</main>
+
+<!-- ════════════════════════════════════════
+     ABOUT PAGE
+     ════════════════════════════════════════ -->
+<main class="page" id="about">
+  <section class="about-hero">
+    <div class="about-hero-bg" aria-hidden="true"></div>
+    <div class="about-hero-deco" aria-hidden="true">🌍</div>
+    <div class="about-hero-content">
+      <p class="about-eyebrow">Est. 2020 · Our Story</p>
+      <h1 class="about-hero-title">For Work<br>&amp; <em>Play.</em></h1>
+      <p class="about-hero-text">We are Hippoint — a Lagos-born brand built on the belief that African fashion belongs everywhere: in the office, on the weekend, at the dinner table, on the dance floor.</p>
+    </div>
+  </section>
+
+  <section class="about-story">
+    <div class="about-story-visual" aria-hidden="true"><span style="position:relative;z-index:1">🌺</span></div>
+    <div>
+      <p class="story-label">The Vision</p>
+      <h2 class="story-title">Built on <em>African Essentials</em></h2>
+      <p class="story-text">Hippoint was born from a simple frustration: why couldn't African prints be the default — not the occasion? In 2020, our founder looked at a wardrobe full of beautiful Ankara pieces she only brought out for events, and decided to change everything.</p>
+      <p class="story-text">We redesigned African textiles for the everyday woman and man — the ones who move between worlds, who hold meetings and make memories, who don't need a reason to look extraordinary.</p>
+      <p class="story-text">Every piece in our collection starts with a fabric sourced from artisan weavers across West Africa. We work directly with our makers, ensuring fair wages, sustainable practices, and the preservation of weaving traditions that deserve to be seen by the world.</p>
+      <p class="story-sig">— Hippoint, est. Lagos 2020 🌹</p>
+    </div>
+  </section>
+
+  <section class="values-section">
+    <p class="values-label">What We Stand For</p>
+    <h2 class="values-title">The Four Pillars of<br><em>Hippoint</em></h2>
+    <div class="values-grid">
+      <div class="value-card reveal"><div class="value-icon">🌿</div><h3 class="value-title">Comfort</h3><p class="value-text">Clothes that feel as good as they look. We use breathable, quality fabrics that keep up with Lagos heat and London winters alike.</p></div>
+      <div class="value-card reveal reveal-delay-1"><div class="value-icon">🌍</div><h3 class="value-title">Culture</h3><p class="value-text">Every print tells a story. We work with artisans to honour traditions — not reduce them to trends. Wear your heritage, carry your roots.</p></div>
+      <div class="value-card reveal reveal-delay-2"><div class="value-icon">✨</div><h3 class="value-title">Quality</h3><p class="value-text">We produce fewer pieces, better made. Each garment is checked twice before it leaves our hands. No compromises on construction or craft.</p></div>
+      <div class="value-card reveal reveal-delay-3"><div class="value-icon">☀️</div><h3 class="value-title">Everyday Wear</h3><p class="value-text">African basics aren't for special occasions. They're for Mondays. For Fridays. For the school run and the board meeting and the Sunday market.</p></div>
+    </div>
+  </section>
+
+  <section class="photo-grid-section">
+    <div class="section-header reveal">
+      <div><p class="section-label">Lifestyle</p><h2 class="section-title">Life in <em>Hippoint</em></h2></div>
+    </div>
+    <div class="photo-grid">
+      <div class="photo-item" style="background:linear-gradient(135deg,#d85e22,#919a2e);font-size:80px" aria-hidden="true">🦋</div>
+      <div class="photo-item" style="background:linear-gradient(135deg,#f7cdec,#e199a9)" aria-hidden="true">🌸</div>
+      <div class="photo-item" style="background:linear-gradient(135deg,#a8b68e,#919a2e);font-size:60px" aria-hidden="true">🌿</div>
+      <div class="photo-item" style="background:linear-gradient(135deg,#e63a31,#d85e22)" aria-hidden="true">🌺</div>
+      <div class="photo-item" style="background:linear-gradient(135deg,#2a1f14,#5a4a3a);font-size:56px" aria-hidden="true">🌍</div>
+    </div>
+  </section>
+
+  <section class="team-statement">
+    <div style="position:absolute;inset:0;background:radial-gradient(circle at 30% 50%,rgba(255,255,255,0.08),transparent)" aria-hidden="true"></div>
+    <div style="position:relative;z-index:1;max-width:700px;margin:0 auto;text-align:center">
+      <p style="font-size:10px;letter-spacing:5px;text-transform:uppercase;color:rgba(255,255,255,0.6);margin-bottom:24px">A Message from Hippoint</p>
+      <blockquote style="font-family:'Cormorant Garamond',serif;font-size:clamp(28px,4vw,46px);font-weight:300;color:#fff;line-height:1.3;font-style:italic;margin-bottom:32px">
+        "We don't make fashion.<br>We make essentials that happen<br>to carry a thousand years of story."
+      </blockquote>
+      <div style="width:60px;height:1px;background:rgba(255,255,255,0.4);margin:0 auto 24px" aria-hidden="true"></div>
+      <p style="font-size:13px;color:rgba(255,255,255,0.7);letter-spacing:2px">THE HIPPOINT TEAM 🌹</p>
+    </div>
+  </section>
+
+  <footer>
+    <div class="footer-grid">
+      <div>
+        <div class="footer-brand-name">HIP<span>POINT</span></div>
+        <p class="footer-tagline">African basics for work and play. Est. 2020.</p>
+        <div class="footer-social">
+          <a class="social-btn" href="#" aria-label="X">𝕏</a>
+          <a class="social-btn" href="#" aria-label="Instagram">📸</a>
+          <a class="social-btn" href="#" aria-label="TikTok">▶</a>
+        </div>
+      </div>
+      <div>
+        <p class="footer-col-title">Navigate</p>
+        <ul class="footer-links">
+          <li><a onclick="navigate('home')" tabindex="0">Home</a></li>
+          <li><a onclick="navigate('shop')" tabindex="0">Shop</a></li>
+        </ul>
+      </div>
+      <div>
+        <p class="footer-col-title">Company</p>
+        <ul class="footer-links">
+          <li><a href="#" tabindex="0">Sustainability</a></li>
+          <li><a href="#" tabindex="0">Artisans</a></li>
+          <li><a href="#" tabindex="0">Careers</a></li>
+        </ul>
+      </div>
+      <div>
+        <p class="footer-col-title">Help</p>
+        <ul class="footer-links">
+          <li><a href="#" tabindex="0">Sizing Guide</a></li>
+          <li><a href="#" tabindex="0">Returns</a></li>
+          <li><a href="#" tabindex="0">Contact</a></li>
+        </ul>
+      </div>
+    </div>
+    <div class="footer-bottom">
+      <p class="footer-copy">© 2025 Hippoint. All rights reserved.</p>
+      <p class="footer-est">African Basics — For Work and Play 🌹</p>
+    </div>
+  </footer>
+</main>
+
+<!-- Cart fly animation element -->
+<div class="cart-fly" id="cartFly" aria-hidden="true"></div>
+
+<!-- JavaScript — loaded LAST so all HTML is ready -->
+<script src="main.js"></script>
+</body>
+</html>

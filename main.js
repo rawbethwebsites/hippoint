@@ -144,40 +144,62 @@ function navigate(page) {
 /* ══════════════════════════════════════════════════════════
    RENDER PRODUCTS
    ══════════════════════════════════════════════════════════ */
+
+// Map Supabase fields to local format
+function normalizeProduct(p) {
+  return {
+    id: p.id,
+    name: p.name,
+    tag: p.tag || '',
+    cat: p.category || p.cat || 'general',
+    price: Number(p.price) || 0,
+    oldPrice: p.old_price || p.oldPrice || null,
+    badge: p.badge || null,
+    emoji: p.emoji || '👗',
+    emoji2: p.emoji2 || p.emoji || '',
+    colors: typeof p.colors === 'string' ? JSON.parse(p.colors) : (p.colors || ['#d85e22','#919a2e']),
+    sizes: typeof p.sizes === 'string' ? JSON.parse(p.sizes) : (p.sizes || ['XS','S','M','L','XL']),
+    desc: p.description || p.desc || '',
+  };
+}
+
 function productCardHTML(p) {
-  const badge    = p.badge
-    ? `<div class="product-badge ${p.badge}">${p.badge === 'new' ? 'New' : 'Sale'}</div>`
+  // Normalize product data (handle both Supabase and fallback formats)
+  const product = normalizeProduct(p);
+  
+  const badge    = product.badge
+    ? `<div class="product-badge ${product.badge}">${product.badge === 'new' ? 'New' : 'Sale'}</div>`
     : '';
-  const oldPrice = p.oldPrice
-    ? `<span class="product-price-old">₦${p.oldPrice.toLocaleString()}</span>`
+  const oldPrice = product.oldPrice
+    ? `<span class="product-price-old">₦${product.oldPrice.toLocaleString()}</span>`
     : '';
-  const colors = (p.colors || ['#d85e22','#919a2e'])
+  const colors = (product.colors || ['#d85e22','#919a2e'])
     .map(c => `<div class="prod-color-dot" style="background:${c}" aria-hidden="true"></div>`)
     .join('');
-  const c1 = (p.colors || ['#f5f0e8'])[0];
-  const c2 = (p.colors || ['#ede6d6'])[1] || '#ede6d6';
+  const c1 = (product.colors || ['#f5f0e8'])[0];
+  const c2 = (product.colors || ['#ede6d6'])[1] || '#ede6d6';
 
   return `
-    <div class="product-card" data-id="${p.id}" data-cat="${p.cat}" data-price="${p.price}"
-         onclick="openModal(${p.id})" tabindex="0"
-         onkeydown="if(event.key==='Enter'||event.key===' ')openModal(${p.id})"
-         role="button" aria-label="View ${p.name}">
+    <div class="product-card" data-id="${product.id}" data-cat="${product.cat}" data-price="${product.price}"
+         onclick="openModal(${product.id})" tabindex="0"
+         onkeydown="if(event.key==='Enter'||event.key===' ')openModal(${product.id})"
+         role="button" aria-label="View ${product.name}">
       <div class="product-img-wrap" style="background:linear-gradient(135deg,${c1}22,${c2}22)">
-        <div class="product-img-1" aria-hidden="true">${p.emoji}</div>
-        <div class="product-img-2" aria-hidden="true">${p.emoji2 || p.emoji}</div>
+        <div class="product-img-1" aria-hidden="true">${product.emoji}</div>
+        <div class="product-img-2" aria-hidden="true">${product.emoji2 || product.emoji}</div>
         ${badge}
-        <button class="product-wishlist" onclick="event.stopPropagation();wishlistToggle(this)" aria-label="Wishlist ${p.name}">
+        <button class="product-wishlist" onclick="event.stopPropagation();wishlistToggle(this)" aria-label="Wishlist ${product.name}">
           <svg viewBox="0 0 24 24" aria-hidden="true"><path d="M20.84 4.61a5.5 5.5 0 00-7.78 0L12 5.67l-1.06-1.06a5.5 5.5 0 00-7.78 7.78l1.06 1.06L12 21.23l7.78-7.78 1.06-1.06a5.5 5.5 0 000-7.78z"/></svg>
         </button>
         <div class="product-actions">
-          <button class="quick-add-btn" onclick="event.stopPropagation();openModal(${p.id})">Quick View</button>
+          <button class="quick-add-btn" onclick="event.stopPropagation();openModal(${product.id})">Quick View</button>
         </div>
       </div>
       <div class="product-info">
-        <div class="product-name">${p.name}</div>
-        <div class="product-variant">${p.tag}</div>
+        <div class="product-name">${product.name}</div>
+        <div class="product-variant">${product.tag}</div>
         <div class="product-price-row">
-          <span class="product-price">₦${p.price.toLocaleString()}</span>
+          <span class="product-price">₦${product.price.toLocaleString()}</span>
           ${oldPrice}
         </div>
         <div class="product-colors">${colors}</div>
@@ -193,17 +215,17 @@ function renderHomeProducts() {
     el.innerHTML = '<p style="text-align:center;padding:40px;color:var(--text-light)">Loading...</p>';
     fetchProductsFromSupabase().then(products => {
       if (products && products.length > 0) {
-        el.innerHTML = products.slice(0, 8).map(productCardHTML).join('');
+        el.innerHTML = products.slice(0, 8).map(p => productCardHTML(normalizeProduct(p))).join('');
       } else {
-        el.innerHTML = allProducts.slice(0, 8).map(productCardHTML).join('');
+        el.innerHTML = allProducts.slice(0, 8).map(p => productCardHTML(normalizeProduct(p))).join('');
       }
       refreshCursorTargets();
     }).catch(() => {
-      el.innerHTML = allProducts.slice(0, 8).map(productCardHTML).join('');
+      el.innerHTML = allProducts.slice(0, 8).map(p => productCardHTML(normalizeProduct(p))).join('');
       refreshCursorTargets();
     });
   } else {
-    el.innerHTML = allProducts.slice(0, 8).map(productCardHTML).join('');
+    el.innerHTML = allProducts.slice(0, 8).map(p => productCardHTML(normalizeProduct(p))).join('');
     refreshCursorTargets();
   }
 }
@@ -217,21 +239,21 @@ function renderShopProducts(data) {
     el.innerHTML = '<p style="text-align:center;padding:40px;color:var(--text-light)">Loading...</p>';
     fetchProductsFromSupabase().then(products => {
       if (products && products.length > 0) {
-        el.innerHTML = products.map(productCardHTML).join('');
+        el.innerHTML = products.map(p => productCardHTML(normalizeProduct(p))).join('');
         if (cnt) cnt.textContent = products.length;
       } else {
-        el.innerHTML = allProducts.map(productCardHTML).join('');
+        el.innerHTML = allProducts.map(p => productCardHTML(normalizeProduct(p))).join('');
         if (cnt) cnt.textContent = allProducts.length;
       }
       refreshCursorTargets();
     }).catch(() => {
-      el.innerHTML = allProducts.map(productCardHTML).join('');
+      el.innerHTML = allProducts.map(p => productCardHTML(normalizeProduct(p))).join('');
       if (cnt) cnt.textContent = allProducts.length;
       refreshCursorTargets();
     });
   } else {
     const arr = data || allProducts;
-    el.innerHTML = arr.map(productCardHTML).join('');
+    el.innerHTML = arr.map(p => productCardHTML(normalizeProduct(p))).join('');
     if (cnt) cnt.textContent = arr.length;
     refreshCursorTargets();
   }
@@ -253,15 +275,16 @@ function filterCategory(el, cat) {
     
     query.then(({ data, error }) => {
       if (!error && data && data.length > 0) {
-        renderShopProducts(data);
+        const normalized = data.map(p => normalizeProduct(p));
+        renderShopProducts(normalized);
       } else {
         const filtered = cat === 'all' ? allProducts : allProducts.filter(p => p.cat === cat);
-        renderShopProducts(filtered);
+        renderShopProducts(filtered.map(p => normalizeProduct(p)));
       }
     });
   } else {
     const filtered = cat === 'all' ? allProducts : allProducts.filter(p => p.cat === cat);
-    renderShopProducts(filtered);
+    renderShopProducts(filtered.map(p => normalizeProduct(p)));
   }
 }
 
@@ -299,7 +322,7 @@ function openModal(id) {
     supabase.from('products').select('*').eq('id', id).single()
       .then(({ data }) => {
         if (data) {
-          showModal(data);
+          showModal(normalizeProduct(data));
         }
       });
     // Show loading or fallback
@@ -307,32 +330,34 @@ function openModal(id) {
   }
   
   if (!p) return;
-  showModal(p);
+  showModal(normalizeProduct(p));
 }
 
 function showModal(p) {
-  currentProduct = p;
+  // Normalize product data
+  const product = normalizeProduct(p);
+  currentProduct = product;
   selectedSize   = '';
 
-  const c1 = (p.colors || ['#f0ead9'])[0];
-  const c2 = (p.colors || ['#ede6d6'])[1] || '#ede6d6';
+  const c1 = (product.colors || ['#f0ead9'])[0];
+  const c2 = (product.colors || ['#ede6d6'])[1] || '#ede6d6';
 
-  document.getElementById('modalEmoji').textContent = p.emoji;
+  document.getElementById('modalEmoji').textContent = product.emoji;
   document.getElementById('modalImg').style.background = `linear-gradient(135deg,${c1}44,${c2}44)`;
-  document.getElementById('modalTag').textContent  = p.tag;
-  document.getElementById('modalName').textContent = p.name;
+  document.getElementById('modalTag').textContent  = product.tag;
+  document.getElementById('modalName').textContent = product.name;
 
-  const priceHTML = '₦' + p.price.toLocaleString() +
-    (p.oldPrice
-      ? ` <span style="font-size:14px;color:var(--text-light);text-decoration:line-through;font-weight:400">₦${p.oldPrice.toLocaleString()}</span>`
+  const priceHTML = '₦' + product.price.toLocaleString() +
+    (product.oldPrice
+      ? ` <span style="font-size:14px;color:var(--text-light);text-decoration:line-through;font-weight:400">₦${product.oldPrice.toLocaleString()}</span>`
       : '');
   document.getElementById('modalPrice').innerHTML = priceHTML;
-  document.getElementById('modalDesc').textContent = p.desc;
+  document.getElementById('modalDesc').textContent = product.desc;
 
   // Render sizes
   const sizeContainer = document.getElementById('modalSizes');
   if (sizeContainer) {
-    const sizes = p.sizes || ['XS','S','M','L','XL'];
+    const sizes = product.sizes || ['XS','S','M','L','XL'];
     sizeContainer.innerHTML = sizes.map(s => 
       `<div class="size-option ${s === selectedSize ? 'active' : ''}" onclick="selectSize(this,'${s}')">${s}</div>`
     ).join('');
@@ -341,7 +366,7 @@ function showModal(p) {
   // Render colors
   const colorContainer = document.getElementById('modalColors');
   if (colorContainer) {
-    const colors = p.colors || ['#d85e22','#919a2e'];
+    const colors = product.colors || ['#d85e22','#919a2e'];
     colorContainer.innerHTML = colors.map(c => 
       `<div class="color-swatch" style="background:${c}" onclick="toggleSwatch(this)"></div>`
     ).join('');

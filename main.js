@@ -11,8 +11,8 @@
 /* ══════════════════════════════════════════════════════════
    SUPABASE CONFIGURATION
    ══════════════════════════════════════════════════════════ */
-const SUPABASE_URL = '';        // e.g., 'https://xxxxx.supabase.co'
-const SUPABASE_ANON_KEY = '';   // e.g., 'eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9...'
+const SUPABASE_URL = 'https://asxqwynhxiooulythjvr.supabase.co';
+const SUPABASE_ANON_KEY = 'eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6ImFzeHF3eW5oeGlvb3VseXRoanZyIiwicm9sZSI6ImFub24iLCJpYXQiOjE3NzI0NTYzNTgsImV4cCI6MjA4ODAzMjM1OH0.6TD2XEZSOeWZssG1hSdqrB0DFiDZTyecu8afnTH8lAg';
 
 const supabase = SUPABASE_URL ? window.supabase.createClient(SUPABASE_URL, SUPABASE_ANON_KEY) : null;
 const USE_SUPABASE = !!(SUPABASE_URL && SUPABASE_ANON_KEY);

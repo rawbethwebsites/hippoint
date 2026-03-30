@@ -118,7 +118,7 @@
     </div>
     <div class="hero-content">
       <p class="hero-eyebrow">Est. 2020 · African Basics</p>
-      <h1 class="hero-headline">African Basics<br>For <em>Everyday</em><br>Comfort</h1>
+      <h1 class="hero-headline">AFRICAN BASICS<br>FOR <em>EVERYDAY</em><br>COMFORT</h1>
       <p class="hero-sub">Everyday African prints reimagined for the people without boundaries — made for work, made for play, made for you.</p>
       <div class="hero-cta-group">
         <button class="cta-main" onclick="navigate('shop')">
@@ -128,6 +128,7 @@
         <button class="cta-ghost" onclick="navigate('about')">Our Story</button>
       </div>
     </div>
+    <div class="hero-3d-product" aria-hidden="true"><div class="hero-3d-card">🌹</div></div>
     <div class="hero-scroll" aria-hidden="true">
       <span class="scroll-text">Scroll</span>
       <div class="scroll-line"></div>
@@ -205,10 +206,15 @@
   <section class="section">
     <div class="section-header reveal">
       <div>
-        <p class="section-label">Bestsellers</p>
+        <p class="section-label">New Arrivals</p>
         <h2 class="section-title">Just <em>Dropped</em></h2>
       </div>
       <span class="section-link" onclick="navigate('shop')" tabindex="0" role="button">Shop All →</span>
+    </div>
+    <div class="arrivals-carousel reveal">
+      <button class="carousel-btn" aria-label="Previous arrivals" onclick="moveCarousel(-1)">←</button>
+      <div class="arrivals-track" id="newArrivalsTrack"></div>
+      <button class="carousel-btn" aria-label="Next arrivals" onclick="moveCarousel(1)">→</button>
     </div>
     <div class="product-grid" id="homeProducts"></div>
   </section>
@@ -273,7 +279,7 @@
     </div>
     <div class="footer-bottom">
       <p class="footer-copy">© 2025 Hippoint. All rights reserved.</p>
-      <p class="footer-est">African Basics — For Work and Play 🌹</p>
+      <p class="footer-est">African Basics — For Work and Play 🌹 · <a href="#" onclick="openCMS()" style="color:inherit">CMS</a></p>
     </div>
   </footer>
 </main>
@@ -335,8 +341,8 @@
             <span>₦5,000</span>
             <span id="priceVal">₦80,000</span>
           </div>
-          <input type="range" class="price-slider" min="5000" max="150000" value="80000"
-            oninput="document.getElementById('priceVal').textContent='₦'+Number(this.value).toLocaleString()"
+          <input type="range" id="priceSlider" class="price-slider" min="5000" max="150000" value="80000"
+            oninput="updatePriceFilter(this.value)"
             aria-label="Maximum price filter">
         </div>
       </div>
@@ -354,6 +360,7 @@
         </select>
       </div>
       <div class="product-grid" id="shopProducts"></div>
+      <div style="text-align:center;padding:26px 0 10px"><button id="loadMoreBtn" class="btn-outline" onclick="loadMoreProducts()">Load More</button></div>
     </div>
   </div>
 
@@ -389,7 +396,7 @@
     </div>
     <div class="footer-bottom">
       <p class="footer-copy">© 2025 Hippoint. All rights reserved.</p>
-      <p class="footer-est">African Basics — For Work and Play 🌹</p>
+      <p class="footer-est">African Basics — For Work and Play 🌹 · <a href="#" onclick="openCMS()" style="color:inherit">CMS</a></p>
     </div>
   </footer>
 </main>
@@ -493,9 +500,26 @@
     </div>
     <div class="footer-bottom">
       <p class="footer-copy">© 2025 Hippoint. All rights reserved.</p>
-      <p class="footer-est">African Basics — For Work and Play 🌹</p>
+      <p class="footer-est">African Basics — For Work and Play 🌹 · <a href="#" onclick="openCMS()" style="color:inherit">CMS</a></p>
     </div>
   </footer>
+</main>
+
+
+<!-- ════════════════════════════════════════
+     CMS PAGE
+     ════════════════════════════════════════ -->
+<main class="page" id="cms">
+  <section class="cms-shell">
+    <div class="section-header" style="padding:100px 48px 24px">
+      <div>
+        <p class="section-label">Backend</p>
+        <h2 class="section-title">HIPPOINT <em>CMS</em></h2>
+      </div>
+      <span class="section-link" onclick="navigate('home')" tabindex="0" role="button">← Back to Storefront</span>
+    </div>
+    <div id="cmsRoot"></div>
+  </section>
 </main>
 
 <!-- Cart fly animation element -->
